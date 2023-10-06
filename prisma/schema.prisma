@@ -1,0 +1,142 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              Int               @id @unique @default(autoincrement())
+  email           String            @unique
+  password        String
+  Profile         Profile?
+
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+
+  @@map("usuariosLogin")
+}
+
+model Profile {
+  id                    Int             @default(autoincrement()) @unique
+  telefone              String
+  email                 String         @unique
+  genero                String
+  estadocivil           String
+  dataNascimento        DateTime
+  nomeCompleto          String
+  role                  ROLE
+  enderecoId            Int
+  endereco              Endereco       @relation(fields: [enderecoId], references: [id])
+  imagem                String?
+  imoveis               Imoveis[]      @relation("ImoveisUsuario")
+  documentos            Documentos[]   @relation("DocumentosUsuario")
+  notificacoesEnviadas  Notificacoes[] @relation("NotificacoesEnviadas")
+  notificacoesRecebidas Notificacoes[] @relation("NotificacoesRecebidas")
+
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int @unique
+
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+
+@@id([id, userId])
+  @@map("usuariosDetalhes")
+}
+
+model Documentos {
+  id                      Int             @unique @default(autoincrement())
+  tipo                    TIPODOCUMENTO
+  numero                  String          @unique
+  ProfileId       Int
+  ProfileRelation Profile @relation("DocumentosUsuario", fields: [ProfileId], references: [id])
+  created_at              DateTime        @default(now())
+  updated_at              DateTime?       @updatedAt
+
+  @@id([id, ProfileId])
+  @@map("documentos")
+}
+
+model Endereco {
+  id              Int               @id @default(autoincrement())
+  rua             String
+  numero          String
+  complemento     String?
+  cidade          String
+  bairro          String
+  uf              String
+  cep             String
+  Profile Profile[]
+  Imoveis         Imoveis[]
+  created_at      DateTime          @default(now())
+  updated_at      DateTime?         @updatedAt
+
+  @@map("enderecos")
+}
+
+model Imoveis {
+  id                Int              @unique @default(autoincrement())
+  enderecoId        Int
+  endereco          Endereco         @relation(fields: [enderecoId], references: [id])
+  tipo              TIPOIMOVEL
+  valorAvaliacao    Float
+  valorAluguel      Float
+  imagens           ImagensImoveis[] @relation("ImagensDoImovel")
+  Profile   Profile  @relation("ImoveisUsuario", fields: [ProfileId], references: [id])
+  ProfileId Int
+  created_at        DateTime         @default(now())
+  updated_at        DateTime?        @updatedAt
+
+  @@id([id, enderecoId])
+  @@map("imoveis")
+}
+
+model ImagensImoveis {
+  id         Int       @default(autoincrement())
+  link       String
+  imovel     Imoveis   @relation("ImagensDoImovel", fields: [imovelId], references: [id])
+  imovelId   Int
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+
+  @@id([id, imovelId])
+  @@map("imagensImoveis")
+}
+
+model Notificacoes {
+  id             Int       @default(autoincrement())
+  remetenteId    Int
+  destinatarioId Int
+  mensagem       String
+  lida           Boolean   @default(false)
+  created_at     DateTime  @default(now())
+  updated_at     DateTime? @updatedAt
+
+  remetente    Profile @relation("NotificacoesEnviadas", fields: [remetenteId], references: [id])
+  destinatario Profile @relation("NotificacoesRecebidas", fields: [destinatarioId], references: [id])
+
+  @@id([id, remetenteId, destinatarioId])
+  @@map("notificacoes")
+}
+
+enum ROLE {
+  ADMIN
+  IMOBILIARIA
+  LOCADOR
+  LOCATARIO
+}
+
+enum TIPODOCUMENTO {
+  CPF
+  CNPJ
+}
+
+enum TIPOIMOVEL {
+  CASA
+  APARTAMENTO
+  TERRENO
+  COMERCIAL
+}
