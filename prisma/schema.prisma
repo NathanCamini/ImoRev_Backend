@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,104 +8,105 @@ datasource db {
 }
 
 model User {
-  id              Int               @id @unique @default(autoincrement())
-  email           String            @unique
-  password        String
-  Profile         Profile?
+  id       Int      @id @unique @default(autoincrement())
+  email    String   @unique
+  password String
+  Profile  Profile?
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
 
-  @@map("usuariosLogin")
+  @@map("user")
 }
 
 model Profile {
-  id                    Int             @default(autoincrement()) @unique
+  id                    Int             @unique @default(autoincrement())
   telefone              String
-  email                 String         @unique
+  email                 String          @unique
   genero                String
   estadocivil           String
   dataNascimento        DateTime
   nomeCompleto          String
   role                  ROLE
   enderecoId            Int
-  endereco              Endereco       @relation(fields: [enderecoId], references: [id])
+  // endereco              Adress         @relation(fields: [enderecoId], references: [id])
   imagem                String?
-  imoveis               Imoveis[]      @relation("ImoveisUsuario")
-  documentos            Documentos[]   @relation("DocumentosUsuario")
-  notificacoesEnviadas  Notificacoes[] @relation("NotificacoesEnviadas")
-  notificacoesRecebidas Notificacoes[] @relation("NotificacoesRecebidas")
+  // imoveis               Properties[]   @relation("ImoveisUsuario")
+  documentos            Documents[]     @relation("DocumentosUsuario")
+  notificacoesEnviadas  Notifications[] @relation("NotificacoesEnviadas")
+  notificacoesRecebidas Notifications[] @relation("NotificacoesRecebidas")
 
-  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId Int @unique
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int  @unique
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
 
-@@id([id, userId])
-  @@map("usuariosDetalhes")
+  @@id([id, userId])
+  @@map("profile")
 }
 
-model Documentos {
-  id                      Int             @unique @default(autoincrement())
-  tipo                    TIPODOCUMENTO
-  numero                  String          @unique
+model Documents {
+  id              Int           @unique @default(autoincrement())
+  tipo            TYPEDOCUMENTS
+  numero          String        @unique
   ProfileId       Int
-  ProfileRelation Profile @relation("DocumentosUsuario", fields: [ProfileId], references: [id])
-  created_at              DateTime        @default(now())
-  updated_at              DateTime?       @updatedAt
+  ProfileRelation Profile       @relation("DocumentosUsuario", fields: [ProfileId], references: [id])
+  created_at      DateTime      @default(now())
+  updated_at      DateTime?     @updatedAt
 
   @@id([id, ProfileId])
-  @@map("documentos")
+  @@map("documents")
 }
 
-model Endereco {
-  id              Int               @id @default(autoincrement())
-  rua             String
-  numero          String
-  complemento     String?
-  cidade          String
-  bairro          String
-  uf              String
-  cep             String
-  Profile Profile[]
-  Imoveis         Imoveis[]
-  created_at      DateTime          @default(now())
-  updated_at      DateTime?         @updatedAt
+model Adress {
+  id          Int          @id @default(autoincrement())
+  rua         String
+  numero      Int
+  complemento String?
+  cidade      String
+  bairro      String
+  uf          String
+  cep         String
+  // profile     Profile[]
+  // Imoveis     Properties[]
+  created_at  DateTime     @default(now())
+  updated_at  DateTime?    @updatedAt
 
-  @@map("enderecos")
+  @@map("adress")
 }
 
-model Imoveis {
-  id                Int              @unique @default(autoincrement())
-  enderecoId        Int
-  endereco          Endereco         @relation(fields: [enderecoId], references: [id])
-  tipo              TIPOIMOVEL
-  valorAvaliacao    Float
-  valorAluguel      Float
-  imagens           ImagensImoveis[] @relation("ImagensDoImovel")
-  Profile   Profile  @relation("ImoveisUsuario", fields: [ProfileId], references: [id])
-  ProfileId Int
-  created_at        DateTime         @default(now())
-  updated_at        DateTime?        @updatedAt
+model Properties {
+  id             Int               @unique @default(autoincrement())
+  // enderecoId     Int
+  // endereco       Adress            @relation(fields: [enderecoId], references: [id])
+  tipo           TYPEPROPERTY
+  valorAvaliacao Float
+  valorAluguel   Float
+  imagens        ImageProperties[] @relation("ImagensDoImovel")
+  // profile        Profile[]           @relation("ImoveisUsuario", fields: [ProfileId], references: [id])
+  // ProfileId      Int
+  created_at     DateTime          @default(now())
+  updated_at     DateTime?         @updatedAt
 
-  @@id([id, enderecoId])
-  @@map("imoveis")
+  // @@id([id, enderecoId])
+  @@id([id])
+  @@map("properties")
 }
 
-model ImagensImoveis {
-  id         Int       @default(autoincrement())
+model ImageProperties {
+  id         Int        @default(autoincrement())
   link       String
-  imovel     Imoveis   @relation("ImagensDoImovel", fields: [imovelId], references: [id])
+  imovel     Properties @relation("ImagensDoImovel", fields: [imovelId], references: [id])
   imovelId   Int
-  created_at DateTime  @default(now())
-  updated_at DateTime? @updatedAt
+  created_at DateTime   @default(now())
+  updated_at DateTime?  @updatedAt
 
   @@id([id, imovelId])
-  @@map("imagensImoveis")
+  @@map("image_properties")
 }
 
-model Notificacoes {
+model Notifications {
   id             Int       @default(autoincrement())
   remetenteId    Int
   destinatarioId Int
@@ -119,7 +119,7 @@ model Notificacoes {
   destinatario Profile @relation("NotificacoesRecebidas", fields: [destinatarioId], references: [id])
 
   @@id([id, remetenteId, destinatarioId])
-  @@map("notificacoes")
+  @@map("notifications")
 }
 
 enum ROLE {
@@ -129,12 +129,12 @@ enum ROLE {
   LOCATARIO
 }
 
-enum TIPODOCUMENTO {
+enum TYPEDOCUMENTS {
   CPF
   CNPJ
 }
 
-enum TIPOIMOVEL {
+enum TYPEPROPERTY {
   CASA
   APARTAMENTO
   TERRENO
