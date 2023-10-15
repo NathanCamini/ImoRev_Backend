@@ -1,13 +1,10 @@
 import { TYPEPROPERTY } from "@prisma/client";
 
-export interface CreatePropertyDTO {
+export interface CreatePropertyDTO {  
   valorAvaliacao: number;
   valorAluguel: number;
-
-  // profileId: number;
-  
   tipo: TYPEPROPERTY;
-  
+  links: string[];
   endereco: {
     rua: string;
     numero: number;
@@ -18,3 +15,4 @@ export interface CreatePropertyDTO {
     cep: string;
   }
 }
+  

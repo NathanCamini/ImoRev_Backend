@@ -7,21 +7,18 @@ export class CreatePropertyController {
       tipo,
       valorAvaliacao,
       valorAluguel,
+      links
     } = req.body.data;
 
     const endereco = req.body.data.endereco;
 
-    console.log(tipo,
-      valorAvaliacao,
-      valorAluguel,
-      endereco
-)
     const createPropertyUseCase = new CreatePropertyUseCase();
     const result = await createPropertyUseCase.execute({
       tipo,
       valorAvaliacao,
-      valorAluguel,     
+      valorAluguel,
       endereco,
+      links
     });
 
     return res.status(201).json(result);

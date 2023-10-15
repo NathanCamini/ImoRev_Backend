@@ -7,119 +7,61 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id       Int      @id @unique @default(autoincrement())
-  email    String   @unique
-  password String
-  Profile  Profile?
+// Locador
+model UsuarioPadrao {
+  id                String   @id @unique @default(uuid())
+  email             String   @unique
+  senha             String
+  telefone          String
+  genero            String
+  estado_civil      String
+  data_nascimento   DateTime
+  nome_completo     String
+  permissao         ROLE
+  imagem_link       String?
+  inscricao_federal String
 
-  created_at DateTime  @default(now())
-  updated_at DateTime? @updatedAt
+  endereco   Endereco @relation("enderecoUsuario", fields: [enderecoId], references: [id])
+  enderecoId String   @unique
 
-  @@map("user")
+  criado_em     DateTime  @default(now())
+  atualizado_em DateTime? @updatedAt
+
+  @@map("usuario_padrao")
 }
 
-model Profile {
-  id                    Int             @unique @default(autoincrement())
-  telefone              String
-  email                 String          @unique
-  genero                String
-  estadocivil           String
-  dataNascimento        DateTime
-  nomeCompleto          String
-  role                  ROLE
-  enderecoId            Int
-  // endereco              Adress         @relation(fields: [enderecoId], references: [id])
-  imagem                String?
-  // imoveis               Properties[]   @relation("ImoveisUsuario")
-  documentos            Documents[]     @relation("DocumentosUsuario")
-  notificacoesEnviadas  Notifications[] @relation("NotificacoesEnviadas")
-  notificacoesRecebidas Notifications[] @relation("NotificacoesRecebidas")
+model Endereco {
+  id          String  @id @default(uuid())
+  rua         String
+  numero      Int
+  complemento String?
+  cidade      String
+  bairro      String
+  uf          String
+  cep         String
 
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId Int  @unique
+  criado_em     DateTime        @default(now())
+  atualizado_em DateTime?       @updatedAt
+  propriedades  Propriedades[]  @relation("enderecoPropriedade")
+  usuario       UsuarioPadrao[] @relation("enderecoUsuario")
 
-  created_at DateTime  @default(now())
-  updated_at DateTime? @updatedAt
-
-  @@id([id, userId])
-  @@map("profile")
+  @@map("endereco")
 }
 
-model Documents {
-  id              Int           @unique @default(autoincrement())
-  tipo            TYPEDOCUMENTS
-  numero          String        @unique
-  profileId       Int
-  profileRelation Profile       @relation("DocumentosUsuario", fields: [profileId], references: [id])
-  created_at      DateTime      @default(now())
-  updated_at      DateTime?     @updatedAt
-
-  @@id([id, profileId])
-  @@map("documents")
-}
-
-model Address {
-  id               Int         @id @default(autoincrement())
-  rua              String
-  numero           Int
-  complemento      String?
-  cidade           String
-  bairro           String
-  uf               String
-  cep              String
-  // profile     Profile[]
-  propertyRelation Properties?
-  created_at       DateTime    @default(now())
-  updated_at       DateTime?   @updatedAt
-
-  @@map("address")
-}
-
-model Properties {
-  id             Int          @unique @default(autoincrement())
-  endereco       Address?       @relation(fields: [enderecoid], references: [id])
-  enderecoid     Int?          @unique
-  valorAvaliacao Float
+model Propriedades {
+  id             String       @id @unique @default(uuid())
   tipo           TYPEPROPERTY
+  valorAvaliacao Float
   valorAluguel   Float
-  // imagens        ImageProperties[] @relation("ImagensDoImovel")
-  // profile        Profile[]           @relation("ImoveisUsuario", fields: [ProfileId], references: [id])
-  // ProfileId      Int
-  created_at     DateTime     @default(now())
-  updated_at     DateTime?    @updatedAt
 
-  @@id([id])
-  @@map("properties")
-}
+  criado_em     DateTime  @default(now())
+  atualizado_em DateTime? @updatedAt
 
-model ImageProperties {
-  id         Int       @default(autoincrement())
-  link       String
-  // imovel     Properties @relation("ImagensDoImovel", fields: [imovelId], references: [id])
-  // imovelId   Int
-  created_at DateTime  @default(now())
-  updated_at DateTime? @updatedAt
+  endereco   Endereco @relation("enderecoPropriedade", fields: [enderecoId], references: [id], onDelete: Cascade)
+  enderecoId String   @unique
+  links      String[]
 
-  // @@id([id, imovelId])
-  @@id([id])
-  @@map("image_properties")
-}
-
-model Notifications {
-  id             Int       @default(autoincrement())
-  remetenteId    Int
-  destinatarioId Int
-  mensagem       String
-  lida           Boolean   @default(false)
-  created_at     DateTime  @default(now())
-  updated_at     DateTime? @updatedAt
-
-  remetente    Profile @relation("NotificacoesEnviadas", fields: [remetenteId], references: [id])
-  destinatario Profile @relation("NotificacoesRecebidas", fields: [destinatarioId], references: [id])
-
-  @@id([id, remetenteId, destinatarioId])
-  @@map("notifications")
+  @@map("propriedades")
 }
 
 enum ROLE {
@@ -127,11 +69,6 @@ enum ROLE {
   IMOBILIARIA
   LOCADOR
   LOCATARIO
-}
-
-enum TYPEDOCUMENTS {
-  CPF
-  CNPJ
 }
 
 enum TYPEPROPERTY {
