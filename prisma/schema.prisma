@@ -50,59 +50,59 @@ model Documents {
   id              Int           @unique @default(autoincrement())
   tipo            TYPEDOCUMENTS
   numero          String        @unique
-  ProfileId       Int
-  ProfileRelation Profile       @relation("DocumentosUsuario", fields: [ProfileId], references: [id])
+  profileId       Int
+  profileRelation Profile       @relation("DocumentosUsuario", fields: [profileId], references: [id])
   created_at      DateTime      @default(now())
   updated_at      DateTime?     @updatedAt
 
-  @@id([id, ProfileId])
+  @@id([id, profileId])
   @@map("documents")
 }
 
-model Adress {
-  id          Int          @id @default(autoincrement())
-  rua         String
-  numero      Int
-  complemento String?
-  cidade      String
-  bairro      String
-  uf          String
-  cep         String
+model Address {
+  id               Int         @id @default(autoincrement())
+  rua              String
+  numero           Int
+  complemento      String?
+  cidade           String
+  bairro           String
+  uf               String
+  cep              String
   // profile     Profile[]
-  // Imoveis     Properties[]
-  created_at  DateTime     @default(now())
-  updated_at  DateTime?    @updatedAt
+  propertyRelation Properties?
+  created_at       DateTime    @default(now())
+  updated_at       DateTime?   @updatedAt
 
-  @@map("adress")
+  @@map("address")
 }
 
 model Properties {
-  id             Int               @unique @default(autoincrement())
-  // enderecoId     Int
-  // endereco       Adress            @relation(fields: [enderecoId], references: [id])
-  tipo           TYPEPROPERTY
+  id             Int          @unique @default(autoincrement())
+  endereco       Address?       @relation(fields: [enderecoid], references: [id])
+  enderecoid     Int?          @unique
   valorAvaliacao Float
+  tipo           TYPEPROPERTY
   valorAluguel   Float
-  imagens        ImageProperties[] @relation("ImagensDoImovel")
+  // imagens        ImageProperties[] @relation("ImagensDoImovel")
   // profile        Profile[]           @relation("ImoveisUsuario", fields: [ProfileId], references: [id])
   // ProfileId      Int
-  created_at     DateTime          @default(now())
-  updated_at     DateTime?         @updatedAt
+  created_at     DateTime     @default(now())
+  updated_at     DateTime?    @updatedAt
 
-  // @@id([id, enderecoId])
   @@id([id])
   @@map("properties")
 }
 
 model ImageProperties {
-  id         Int        @default(autoincrement())
+  id         Int       @default(autoincrement())
   link       String
-  imovel     Properties @relation("ImagensDoImovel", fields: [imovelId], references: [id])
-  imovelId   Int
-  created_at DateTime   @default(now())
-  updated_at DateTime?  @updatedAt
+  // imovel     Properties @relation("ImagensDoImovel", fields: [imovelId], references: [id])
+  // imovelId   Int
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
 
-  @@id([id, imovelId])
+  // @@id([id, imovelId])
+  @@id([id])
   @@map("image_properties")
 }
 

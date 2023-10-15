@@ -7,44 +7,23 @@ export class CreatePropertyController {
       tipo,
       valorAvaliacao,
       valorAluguel,
-    } = req.body;
+    } = req.body.data;
 
+    const endereco = req.body.data.endereco;
+
+    console.log(tipo,
+      valorAvaliacao,
+      valorAluguel,
+      endereco
+)
     const createPropertyUseCase = new CreatePropertyUseCase();
     const result = await createPropertyUseCase.execute({
       tipo,
       valorAvaliacao,
-      valorAluguel,
+      valorAluguel,     
+      endereco,
     });
 
     return res.status(201).json(result);
   }
 }
-
-
-// rua,
-// numero,
-// complemento,
-// cidade,
-// bairro,
-// uf,
-// cep,
-// link,
-
-
-// teste:
-// {
-// 	"tipo": "CASA",
-	
-// 	"valorAvaliacao": 350000,
-// 	"valorAluguel": 1500,
-	
-// 	"rua": "Rua dos bobos",
-// 	"numero": 300,
-// 	"complemento": "bloco b",
-// 	"cidade": "bento gonçalves",
-// 	"bairro": "sao roque",
-// 	"uf": "uf",
-// 	"cep": "cep123",
-// 	"link": "link132",
-// 	"profileId": 1
-// }
