@@ -4,6 +4,17 @@ import { AppError } from "../../../../errors/AppError";
 
 export class DeletePropertyUseCase {
   async execute({ id }: DeletePropertyDTO): Promise<DeletePropertyDTO> {
+
+    // Caso não tenha a propriedade
+    const propertyAlreadyExists = await prisma.propriedades.findUnique({
+      where: {
+        id: id,
+      },
+    });
+    if (!propertyAlreadyExists) {
+      throw new AppError("Propriedade não encontrada");
+    }
+
     // Consulta o endereco relacionado
     const enderecoQuery = await prisma.propriedades.findUnique({
       select: { enderecoId: true },
