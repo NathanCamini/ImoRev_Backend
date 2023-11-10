@@ -24,8 +24,10 @@ model UsuarioPadrao {
   endereco   Endereco @relation("enderecoUsuario", fields: [enderecoId], references: [id])
   enderecoId String   @unique
 
-  criado_em     DateTime  @default(now())
-  atualizado_em DateTime? @updatedAt
+  criado_em     DateTime       @default(now())
+  atualizado_em DateTime?      @updatedAt
+
+  propriedades  Propriedades[] @relation("proprietarioPropriedade")
 
   @@map("usuario_padrao")
 }
@@ -42,6 +44,7 @@ model Endereco {
 
   criado_em     DateTime        @default(now())
   atualizado_em DateTime?       @updatedAt
+
   propriedades  Propriedades[]  @relation("enderecoPropriedade")
   usuario       UsuarioPadrao[] @relation("enderecoUsuario")
 
@@ -50,16 +53,20 @@ model Endereco {
 
 model Propriedades {
   id             String       @id @unique @default(uuid())
+  matricula      String
   tipo           TYPEPROPERTY
   valorAvaliacao Float
   valorAluguel   Float
+  links          String[]
 
-  criado_em     DateTime  @default(now())
-  atualizado_em DateTime? @updatedAt
+  proprietario   UsuarioPadrao @relation("proprietarioPropriedade", fields: [proprietarioId], references: [id])
+  proprietarioId String
 
   endereco   Endereco @relation("enderecoPropriedade", fields: [enderecoId], references: [id], onDelete: Cascade)
   enderecoId String   @unique
-  links      String[]
+
+  criado_em     DateTime  @default(now())
+  atualizado_em DateTime? @updatedAt
 
   @@map("propriedades")
 }

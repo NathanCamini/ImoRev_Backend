@@ -5,6 +5,8 @@ export interface CreatePropertyDTO {
   valorAluguel: number;
   tipo: TYPEPROPERTY;
   links: string[];
+  matricula: string;
+  proprietario: string;
   endereco: {
     rua: string;
     numero: number;

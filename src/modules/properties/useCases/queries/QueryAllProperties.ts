@@ -6,6 +6,11 @@ export class QueryAllProperties {
     const queryAllPropertiesResult = await prisma.propriedades.findMany({
       include: {
         endereco: true,
+        proprietario: {
+          select: {
+            nome_completo: true,
+          },
+        },
       },
     });
     if (queryAllPropertiesResult.length === 0) {
