@@ -24,10 +24,11 @@ model UsuarioPadrao {
   endereco   Endereco @relation("enderecoUsuario", fields: [enderecoId], references: [id])
   enderecoId String   @unique
 
-  criado_em     DateTime       @default(now())
-  atualizado_em DateTime?      @updatedAt
+  criado_em     DateTime  @default(now())
+  atualizado_em DateTime? @updatedAt
 
-  propriedades  Propriedades[] @relation("proprietarioPropriedade")
+  propriedades Propriedades[] @relation("proprietarioPropriedade")
+  requisitante Requests[]     @relation("requisitante")
 
   @@map("usuario_padrao")
 }
@@ -42,11 +43,11 @@ model Endereco {
   uf          String
   cep         String
 
-  criado_em     DateTime        @default(now())
-  atualizado_em DateTime?       @updatedAt
+  criado_em     DateTime  @default(now())
+  atualizado_em DateTime? @updatedAt
 
-  propriedades  Propriedades[]  @relation("enderecoPropriedade")
-  usuario       UsuarioPadrao[] @relation("enderecoUsuario")
+  propriedades Propriedades[]  @relation("enderecoPropriedade")
+  usuario      UsuarioPadrao[] @relation("enderecoUsuario")
 
   @@map("endereco")
 }
@@ -71,6 +72,17 @@ model Propriedades {
   @@map("propriedades")
 }
 
+model Requests {
+  id             String        @id @unique @default(uuid())
+  description    String
+  tipoServico    TYPESERVICE
+  
+  requisitante   UsuarioPadrao @relation("requisitante", fields: [requisitanteId], references: [id])
+  requisitanteId String
+
+  @@map("requests")
+}
+
 enum ROLE {
   ADMIN
   IMOBILIARIA
@@ -83,4 +95,9 @@ enum TYPEPROPERTY {
   APARTAMENTO
   TERRENO
   COMERCIAL
+}
+
+enum TYPESERVICE {
+  MANUTENCAO_ELETRICA
+  MANUTENCAO_PREDIAL
 }
