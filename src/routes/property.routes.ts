@@ -6,10 +6,12 @@ import { QueriesPropertyController } from "../modules/properties/useCases/querie
 const createPropertyController = new CreatePropertyController();
 const deletePropertyController = new DeletePropertyController();
 const queriesPropertyController = new QueriesPropertyController();
+
 const propertyRoutes = Router();
 
 propertyRoutes.post("/", createPropertyController.handle);
 propertyRoutes.get("/getAllProperties", queriesPropertyController.getAllProperties);
+propertyRoutes.get("/getAProperty/:id", queriesPropertyController.getAProperty);
 propertyRoutes.delete("/delete/:id", deletePropertyController.handle);
 
 export { propertyRoutes };

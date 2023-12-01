@@ -13,7 +13,7 @@ export class CreatePropertyUseCase {
     endereco,
     proprietario,
   }: CreatePropertyDTO): Promise<Propriedades> {
-    console.log(proprietario);
+
     // Criação da propriedade associando-a ao endereço e ao proprietário
     const property = await prisma.propriedades.create({
       data: {

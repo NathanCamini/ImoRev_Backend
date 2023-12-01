@@ -9,6 +9,7 @@ export class QueryAllProperties {
         proprietario: {
           select: {
             nome_completo: true,
+            imagem_link: true,
           },
         },
       },

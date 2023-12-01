@@ -3,7 +3,6 @@ import { CreatePropertyUseCase } from "./CreatePropertyUseCase";
 
 export class CreatePropertyController {
   async handle(req: Request, res: Response) {
-    console.log(req.body.data);
     const {
       tipo,
       valorAvaliacao,
